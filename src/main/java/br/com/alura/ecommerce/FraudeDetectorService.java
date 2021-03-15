@@ -42,6 +42,7 @@ public class FraudeDetectorService {
         properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, FraudeDetectorService.class.getSimpleName());
+        properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
 
         return properties;
     }
