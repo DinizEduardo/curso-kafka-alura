@@ -1,38 +1,30 @@
 package br.com.alura.ecommerce;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-import java.time.Duration;
-import java.util.Collections;
 import java.util.Properties;
 
 public class FraudeDetectorService {
 
     public static void main(String[] args) throws InterruptedException {
-        var consumer = new KafkaConsumer<String, String>(properties());
+        var fraudeService = new FraudeDetectorService();
+        var service = new KafkaService(FraudeDetectorService.class.getSimpleName(),
+                "ECOMMERCE_NEW_ORDER",
+                fraudeService::parse);
 
-        consumer.subscribe(Collections.singleton("ECOMMERCE_NEW_ORDER"));
-        while(true) {
-            var records = consumer.poll(Duration.ofMillis(100));
+        service.run();
+    }
 
-            if(!records.isEmpty()) {
-
-                for (var record : records) {
-                    System.out.println("=============================================================");
-                    System.out.println("Processing");
-                    System.out.println("Key: " + record.key());
-                    System.out.println("Value: " + record.value());
-                    System.out.println("Offset: " + record.offset());
-
-                    System.out.println("Processed");
-                }
-
-            }
-            Thread.sleep(3000);
-
-        }
+    private void parse(ConsumerRecord<String, String> record) throws InterruptedException {
+        System.out.println("=============================================================");
+        System.out.println("Checking for fraud");
+        System.out.println("Key: " + record.key());
+        System.out.println("Value: " + record.value());
+        System.out.println("Offset: " + record.offset());
+        System.out.println("Processed");
+        Thread.sleep(3000);
     }
 
     private static Properties properties() {
