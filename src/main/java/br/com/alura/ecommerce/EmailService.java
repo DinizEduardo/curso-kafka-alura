@@ -6,11 +6,12 @@ public class EmailService {
 
         public static void main(String[] args) throws InterruptedException {
             var emailService = new br.com.alura.ecommerce.EmailService();
-            var service = new KafkaService(EmailService.class.getSimpleName(),
+            try(var service = new KafkaService(EmailService.class.getSimpleName(),
                     "ECOMMERCE_SEND_EMAIL",
-                    emailService::parse);
+                    emailService::parse)){
+                service.run();
+            }
 
-            service.run();
         }
 
         private void parse(ConsumerRecord<String, String> record) {

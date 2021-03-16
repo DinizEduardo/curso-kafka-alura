@@ -10,11 +10,12 @@ public class FraudeDetectorService {
 
     public static void main(String[] args) throws InterruptedException {
         var fraudeService = new FraudeDetectorService();
-        var service = new KafkaService(FraudeDetectorService.class.getSimpleName(),
+        try(var service = new KafkaService(FraudeDetectorService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
-                fraudeService::parse);
+                fraudeService::parse)){
+            service.run();
+        }
 
-        service.run();
     }
 
     private void parse(ConsumerRecord<String, String> record) throws InterruptedException {
