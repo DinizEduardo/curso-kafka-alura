@@ -7,6 +7,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import java.io.Closeable;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -15,19 +16,19 @@ public class KafkaService<T> implements Closeable {
     private final KafkaConsumer<String, T> consumer;
     private ConsumerFunction parse;
 
-    public KafkaService(String name, String topic, ConsumerFunction parse, Class<T> type) {
-        this(name, parse, type);
+    public KafkaService(String name, String topic, ConsumerFunction parse, Class<T> type,  Map<String, String> properties) {
+        this(name, parse, type, properties);
         consumer.subscribe(Collections.singleton(topic));
         
     }
 
-    private KafkaService(String name, ConsumerFunction parse, Class<T> type) {
-        this.consumer = new KafkaConsumer<>(properties(type, name));
+    private KafkaService(String name, ConsumerFunction parse, Class<T> type,  Map<String, String> properties) {
+        this.consumer = new KafkaConsumer<>(properties(type, name, properties));
         this.parse = parse;
     }
 
-    public KafkaService(String name, Pattern topic, ConsumerFunction parse, Class<T> type) {
-        this(name, parse, type);
+    public KafkaService(String name, Pattern topic, ConsumerFunction parse, Class<T> type, Map<String, String> properties) {
+        this(name, parse, type, properties);
         consumer.subscribe(topic);
     }
 
@@ -43,7 +44,7 @@ public class KafkaService<T> implements Closeable {
         }
     }
 
-    private Properties properties(Class<T> type, String name) {
+    private Properties properties(Class<T> type, String name, Map<String, String> overrideProperties) {
         var properties = new Properties();
 
         properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
@@ -54,6 +55,9 @@ public class KafkaService<T> implements Closeable {
 
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, name);
         properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
+
+        properties.putAll(overrideProperties);
+
         return properties;
     }
 

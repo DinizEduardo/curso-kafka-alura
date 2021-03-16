@@ -4,6 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 public class FraudeDetectorService {
@@ -13,7 +14,9 @@ public class FraudeDetectorService {
         try(var service = new KafkaService(FraudeDetectorService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
                 fraudeService::parse,
-                Order.class)){
+                Order.class,
+                new HashMap<>()
+                )){
             service.run();
         }
 
