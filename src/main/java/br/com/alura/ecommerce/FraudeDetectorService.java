@@ -12,13 +12,14 @@ public class FraudeDetectorService {
         var fraudeService = new FraudeDetectorService();
         try(var service = new KafkaService(FraudeDetectorService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
-                fraudeService::parse)){
+                fraudeService::parse,
+                Order.class)){
             service.run();
         }
 
     }
 
-    private void parse(ConsumerRecord<String, String> record) throws InterruptedException {
+    private void parse(ConsumerRecord<String, Order> record) throws InterruptedException {
         System.out.println("=============================================================");
         System.out.println("Checking for fraud");
         System.out.println("Key: " + record.key());
